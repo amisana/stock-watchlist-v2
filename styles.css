@@ -1,0 +1,500 @@
+/*------------------------------------*\
+  #DOCUMENTATION
+  
+  Architecture Overview:
+  - Design Tokens: Core visual foundations
+  - Components: Reusable UI patterns
+  - Utilities: Single-purpose classes
+  - States: Interactive behaviors
+  - Motion: Animation patterns
+  
+  Performance Considerations:
+  - Uses CSS containment for layout isolation
+  - Optimizes paint operations via GPU
+  - Implements will-change strategically
+  
+  Accessibility Features:
+  - High contrast mode support
+  - Reduced motion preferences
+  - Focus management system
+\*------------------------------------*/
+
+/*------------------------------------*\
+  #DESIGN-TOKENS
+\*------------------------------------*/
+:root {
+    /* Color System - Core */
+    --color-bg-primary: #0a0d18;
+    --color-bg-secondary: #151926;
+    --color-bg-tertiary: #1e2235;
+    --color-bg-hover: rgba(255, 255, 255, 0.05);
+    --color-bg-active: rgba(255, 255, 255, 0.1);
+    
+    /* Color System - Typography */
+    --color-text-primary: rgba(255, 255, 255, 0.95);
+    --color-text-secondary: rgba(255, 255, 255, 0.65);
+    --color-text-tertiary: rgba(255, 255, 255, 0.45);
+    
+    /* Color System - Semantic */
+    --color-positive: #16a34a;
+    --color-positive-hover: #15803d;
+    --color-negative: #dc2626;
+    --color-negative-hover: #b91c1c;
+    --color-neutral: #6b7280;
+    
+    /* Typography Scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    
+    /* Spacing Scale */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Effects & Transitions */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition-base: all 0.2s ease;
+
+    /* Z-Index Scale */
+    --z-negative: -1;
+    --z-elevate: 1;
+    --z-sticky: 100;
+    --z-dropdown: 200;
+    --z-modal: 300;
+    --z-toast: 400;
+    --z-tooltip: 500;
+}
+
+/*------------------------------------*\
+  #RESET
+\*------------------------------------*/
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*------------------------------------*\
+  #BASE
+\*------------------------------------*/
+body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.5;
+    padding: var(--spacing-lg);
+}
+
+/*------------------------------------*\
+  #COMPONENTS
+\*------------------------------------*/
+
+/* Navigation Bar */
+.table-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Search Component */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
+
+.table-search {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    padding-left: calc(var(--spacing-lg) + 24px);
+    background: var(--color-bg-tertiary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    transition: var(--transition-base);
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--spacing-sm);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-tertiary);
+    pointer-events: none;
+}
+
+/* View Controls */
+.view-controls {
+    display: flex;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1px;
+    border-radius: 8px;
+}
+
+.view-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    border-radius: 7px;
+    min-width: 100px;
+}
+
+/* Data Table */
+.data-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    background: var(--color-bg-secondary);
+    box-shadow: var(--shadow-md);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* Table Headers */
+.data-table th {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    text-align: left;
+    padding: var(--spacing-md) var(--spacing-lg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition-base);
+}
+
+/* Table Cells */
+.data-table td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: var(--transition-base);
+}
+
+/*------------------------------------*\
+  #UTILITIES
+\*------------------------------------*/
+.symbol {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+
+.company-name {
+    color: var(--color-text-secondary);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.price-change {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+/*------------------------------------*\
+  #STATES
+\*------------------------------------*/
+.table-search:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+}
+
+.view-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.view-btn.active {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
+.data-table th:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.data-table tr:hover td {
+    background-color: var(--color-bg-hover);
+}
+
+.price-change.positive {
+    color: var(--color-positive);
+}
+
+.price-change.negative {
+    color: var(--color-negative);
+}
+
+/*------------------------------------*\
+  #ANIMATIONS
+\*------------------------------------*/
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/*------------------------------------*\
+  #ADVANCED GRID SYSTEM
+\*------------------------------------*/
+
+/* Advanced Grid System */
+.data-grid {
+    --grid-cols: 12;
+    --grid-gap: var(--spacing-md);
+    
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+    gap: var(--grid-gap);
+}
+
+/* Responsive Grid Utilities */
+@media (max-width: 1200px) {
+    .data-grid {
+        --grid-cols: 8;
+    }
+}
+
+@media (max-width: 768px) {
+    .data-grid {
+        --grid-cols: 4;
+    }
+}
+
+/* Grid Layout Utilities */
+.grid-span-full {
+    grid-column: 1 / -1;
+}
+
+.grid-span-6 {
+    grid-column: span 6;
+}
+
+/*------------------------------------*\
+  #PERFORMANCE OPTIMIZATIONS
+\*------------------------------------*/
+
+/* Performance Optimizations */
+.optimize-gpu {
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+@media (max-width: 768px) {
+    .optimize-gpu {
+        will-change: auto; /* Reset on mobile for better performance */
+    }
+}
+
+/*------------------------------------*\
+  #ACCESSIBILITY ENHANCEMENTS
+\*------------------------------------*/
+
+@media (prefers-contrast: high) {
+    :root {
+        --color-bg-primary: #000000;
+        --color-text-primary: #ffffff;
+        --color-positive: #00ff00;
+        --color-negative: #ff0000;
+    }
+}
+
+/* Focus Visible Improvements */
+.enhanced-focus:focus-visible {
+    outline: 3px solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+}
+
+/*------------------------------------*\
+  #ENHANCED TYPOGRAPHY SYSTEM
+\*------------------------------------*/
+
+/* Advanced Typography System */
+:root {
+    /* Typography Scale - Based on Perfect Fourth (1.333) */
+    --scale-ratio: 1.333;
+    --font-size-xs: calc(var(--font-size-sm) / var(--scale-ratio));
+    --font-size-sm: calc(var(--font-size-base) / var(--scale-ratio));
+    --font-size-base: 1rem;
+    --font-size-lg: calc(var(--font-size-base) * var(--scale-ratio));
+    --font-size-xl: calc(var(--font-size-lg) * var(--scale-ratio));
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Line Heights */
+    --line-height-tight: 1.2;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+}
+
+/*------------------------------------*\
+  #ADVANCED MOTION SYSTEM
+\*------------------------------------*/
+
+/* Advanced Motion System */
+:root {
+    /* Easings */
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    
+    /* Durations */
+    --duration-75: 75ms;
+    --duration-100: 100ms;
+    --duration-150: 150ms;
+    --duration-200: 200ms;
+    --duration-300: 300ms;
+    
+    /* Transitions */
+    --transition-transform: transform var(--duration-200) var(--ease-out);
+    --transition-opacity: opacity var(--duration-150) var(--ease-in-out);
+    --transition-colors: background-color var(--duration-200) var(--ease-in-out),
+                        border-color var(--duration-200) var(--ease-in-out),
+                        color var(--duration-200) var(--ease-in-out);
+}
+
+/* Enhanced Hover Effects */
+.interactive-element {
+    transition: var(--transition-transform), var(--transition-colors);
+}
+
+.interactive-element:hover {
+    transform: translateY(-2px);
+}
+
+/* Motion Composition Utilities */
+.motion-safe {
+    @media (prefers-reduced-motion: no-preference) {
+        --enable-animations: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        --enable-animations: 0;
+    }
+}
+
+.motion-reduce {
+    transition-duration: calc(var(--duration-base) * var(--enable-animations, 0));
+}
+
+/*------------------------------------*\
+  #SOPHISTICATED STATE MANAGEMENT
+\*------------------------------------*/
+
+/* Sophisticated State Management */
+.component {
+    --component-opacity: 1;
+    --component-scale: 1;
+    --component-blur: 0;
+    
+    opacity: var(--component-opacity);
+    transform: scale(var(--component-scale));
+    filter: blur(var(--component-blur));
+    transition: var(--transition-transform), 
+                var(--transition-opacity),
+                filter var(--duration-200) var(--ease-out);
+}
+
+.component[data-state="loading"] {
+    --component-opacity: 0.7;
+    --component-scale: 0.98;
+    --component-blur: 2px;
+}
+
+.component[data-state="disabled"] {
+    --component-opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Enhanced Loading States */
+.skeleton {
+    --skeleton-color: rgba(255, 255, 255, 0.1);
+    --skeleton-highlight: rgba(255, 255, 255, 0.05);
+    
+    background: linear-gradient(
+        90deg,
+        var(--skeleton-color) 25%,
+        var(--skeleton-highlight) 37%,
+        var(--skeleton-color) 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/*------------------------------------*\
+  #ENHANCED FOCUS MANAGEMENT
+\*------------------------------------*/
+
+/* Enhanced Focus Management */
+:root {
+    --focus-ring-color: rgba(59, 130, 246, 0.5);
+    --focus-ring-offset: 2px;
+}
+
+.focus-visible:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-offset) var(--color-bg-primary),
+                0 0 0 calc(var(--focus-ring-offset) + 2px) var(--focus-ring-color);
+}
+
+/* Focus Within States */
+.focus-within-container:focus-within {
+    background-color: var(--color-bg-hover);
+}
+
+/*------------------------------------*\
+  #RESPONSIVE DESIGN UTILITIES
+\*------------------------------------*/
+
+@container (min-width: 40em) {
+    .data-table-container {
+        padding: var(--spacing-lg);
+    }
+}
+
+.data-table-container {
+    container-type: inline-size;
+}
