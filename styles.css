@@ -42,11 +42,25 @@
     --color-negative-hover: #b91c1c;
     --color-neutral: #6b7280;
     
-    /* Typography Scale */
-    --font-size-xs: 0.75rem;
-    --font-size-sm: 0.875rem;
+    /* Typography Scale - Based on Perfect Fourth (1.333) */
+    --scale-ratio: 1.333;
+    --font-size-xs: calc(var(--font-size-sm) / var(--scale-ratio));
+    --font-size-sm: calc(var(--font-size-base) / var(--scale-ratio));
     --font-size-base: 1rem;
-    --font-size-lg: 1.125rem;
+    --font-size-lg: calc(var(--font-size-base) * var(--scale-ratio));
+    --font-size-xl: calc(var(--font-size-lg) * var(--scale-ratio));
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Line Heights */
+    --line-height-tight: 1.2;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
     
     /* Spacing Scale */
     --spacing-xs: 0.25rem;
@@ -59,7 +73,7 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition-base: all 0.2s ease;
-
+    
     /* Z-Index Scale */
     --z-negative: -1;
     --z-elevate: 1;
@@ -68,6 +82,10 @@
     --z-modal: 300;
     --z-toast: 400;
     --z-tooltip: 500;
+    
+    /* Focus Ring */
+    --focus-ring-color: rgba(59, 130, 246, 0.5);
+    --focus-ring-offset: 2px;
 }
 
 /*------------------------------------*\
@@ -88,7 +106,7 @@ body {
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    line-height: 1.5;
+    line-height: var(--line-height-normal);
     padding: var(--spacing-lg);
 }
 
@@ -133,6 +151,10 @@ body {
     transition: var(--transition-base);
 }
 
+.table-search::placeholder {
+    color: var(--color-text-tertiary);
+}
+
 .search-icon {
     position: absolute;
     left: var(--spacing-sm);
@@ -163,6 +185,15 @@ body {
     min-width: 100px;
 }
 
+.view-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.view-btn.active {
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
 /* Data Table */
 .data-table-container {
     width: 100%;
@@ -170,6 +201,7 @@ body {
     border-radius: 12px;
     background: var(--color-bg-secondary);
     box-shadow: var(--shadow-md);
+    position: relative;
 }
 
 .data-table {
@@ -179,32 +211,54 @@ body {
     font-size: var(--font-size-sm);
 }
 
-/* Table Headers */
 .data-table th {
     background: var(--color-bg-secondary);
     color: var(--color-text-secondary);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     text-align: left;
     padding: var(--spacing-md) var(--spacing-lg);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: var(--z-sticky);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: var(--transition-base);
+    cursor: pointer;
 }
 
-/* Table Cells */
+.data-table th:hover {
+    background: var(--color-bg-tertiary);
+}
+
 .data-table td {
     padding: var(--spacing-md) var(--spacing-lg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: var(--transition-base);
 }
 
+.data-table tr:hover td {
+    background-color: var(--color-bg-hover);
+}
+
+.align-right {
+    text-align: right;
+}
+
+/* Sort Indicators */
+th.sort-asc::after {
+    content: ' ▲';
+    font-size: 0.75rem;
+}
+
+th.sort-desc::after {
+    content: ' ▼';
+    font-size: 0.75rem;
+}
+
 /*------------------------------------*\
   #UTILITIES
 \*------------------------------------*/
 .symbol {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     font-family: 'SF Mono', Monaco, Consolas, monospace;
 }
@@ -222,6 +276,14 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.positive {
+    color: var(--color-positive);
+}
+
+.negative {
+    color: var(--color-negative);
+}
+
 /*------------------------------------*\
   #STATES
 \*------------------------------------*/
@@ -235,25 +297,16 @@ body {
     color: var(--color-text-primary);
 }
 
-.view-btn.active {
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
-}
-
 .data-table th:hover {
     background: var(--color-bg-tertiary);
 }
 
-.data-table tr:hover td {
-    background-color: var(--color-bg-hover);
+.price-change.positive:hover {
+    color: var(--color-positive-hover);
 }
 
-.price-change.positive {
-    color: var(--color-positive);
-}
-
-.price-change.negative {
-    color: var(--color-negative);
+.price-change.negative:hover {
+    color: var(--color-negative-hover);
 }
 
 /*------------------------------------*\
@@ -330,36 +383,15 @@ body {
 }
 
 /* Focus Visible Improvements */
-.enhanced-focus:focus-visible {
-    outline: 3px solid var(--focus-ring-color);
-    outline-offset: var(--focus-ring-offset);
+.focus-visible:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-offset) var(--color-bg-primary),
+                0 0 0 calc(var(--focus-ring-offset) + 2px) var(--focus-ring-color);
 }
 
-/*------------------------------------*\
-  #ENHANCED TYPOGRAPHY SYSTEM
-\*------------------------------------*/
-
-/* Advanced Typography System */
-:root {
-    /* Typography Scale - Based on Perfect Fourth (1.333) */
-    --scale-ratio: 1.333;
-    --font-size-xs: calc(var(--font-size-sm) / var(--scale-ratio));
-    --font-size-sm: calc(var(--font-size-base) / var(--scale-ratio));
-    --font-size-base: 1rem;
-    --font-size-lg: calc(var(--font-size-base) * var(--scale-ratio));
-    --font-size-xl: calc(var(--font-size-lg) * var(--scale-ratio));
-    
-    /* Font Weights */
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
-    
-    /* Line Heights */
-    --line-height-tight: 1.2;
-    --line-height-snug: 1.375;
-    --line-height-normal: 1.5;
-    --line-height-relaxed: 1.625;
+/* Focus Within States */
+.focus-within-container:focus-within {
+    background-color: var(--color-bg-hover);
 }
 
 /*------------------------------------*\
@@ -441,27 +473,44 @@ body {
 }
 
 /* Enhanced Loading States */
-.skeleton {
-    --skeleton-color: rgba(255, 255, 255, 0.1);
-    --skeleton-highlight: rgba(255, 255, 255, 0.05);
-    
-    background: linear-gradient(
-        90deg,
-        var(--skeleton-color) 25%,
-        var(--skeleton-highlight) 37%,
-        var(--skeleton-color) 63%
-    );
-    background-size: 400% 100%;
-    animation: skeleton-loading 1.4s ease infinite;
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 13, 24, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    z-index: var(--z-modal);
 }
 
-@keyframes skeleton-loading {
-    0% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0 50%;
-    }
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--color-text-tertiary);
+    border-top: 5px solid var(--color-positive);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.error-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(220, 38, 38, 0.9);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    text-align: center;
+    z-index: var(--z-modal);
 }
 
 /*------------------------------------*\
@@ -469,11 +518,6 @@ body {
 \*------------------------------------*/
 
 /* Enhanced Focus Management */
-:root {
-    --focus-ring-color: rgba(59, 130, 246, 0.5);
-    --focus-ring-offset: 2px;
-}
-
 .focus-visible:focus-visible {
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-offset) var(--color-bg-primary),
@@ -498,3 +542,139 @@ body {
 .data-table-container {
     container-type: inline-size;
 }
+
+/*------------------------------------*\
+  #ACCESSIBILITY MEDIA QUERIES
+\*------------------------------------*/
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* styles.css */
+
+/* ... [Existing styles above remain unchanged] ... */
+
+/*------------------------------------*\
+  #TOOLTIP COMPONENT
+\*------------------------------------*/
+
+/* Tooltip Container */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Info Icon */
+.info-icon {
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--color-text-tertiary);
+    transition: color var(--transition-base);
+}
+
+.info-icon:hover,
+.info-icon:focus {
+    color: var(--color-text-primary);
+}
+
+/* Tooltip Text */
+.tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    text-align: left;
+    border-radius: 6px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    position: absolute;
+    z-index: var(--z-tooltip);
+    bottom: 130%; /* Position above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    box-shadow: var(--shadow-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    pointer-events: none; /* Prevent tooltip from interfering with mouse events */
+}
+
+/* Tooltip Arrow */
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--color-bg-tertiary) transparent transparent transparent;
+}
+
+/* Show Tooltip on Hover and Focus */
+.tooltip-container:hover .tooltip-text,
+.tooltip-container:focus-within .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*------------------------------------*\
+  #SORT INDICATORS
+\*------------------------------------*/
+th.sort-asc::after {
+    content: ' ▲';
+    font-size: 0.75rem;
+}
+
+th.sort-desc::after {
+    content: ' ▼';
+    font-size: 0.75rem;
+}
+
+/*------------------------------------*\
+  #ROW HEIGHT ADJUSTMENT
+\*------------------------------------*/
+
+/* Decrease row height by reducing vertical padding */
+.data-table th,
+.data-table td {
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+    /* Optional: Adjust font-size for better fit */
+    font-size: calc(var(--font-size-sm) * 0.9);
+}
+
+/* Optional: Adjust tooltip positioning if necessary */
+.tooltip-text {
+    bottom: 130%; /* Slightly higher to prevent overlap */
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Adjust loading and error overlays if necessary */
+.loading-overlay,
+.error-overlay {
+    padding: var(--spacing-lg);
+}
+
+/* Ensure tooltips have adequate space */
+@media (max-width: 600px) {
+    .tooltip-text {
+        width: 200px;
+    }
+}
+
+/*------------------------------------*\
+  #ADDITIONAL STYLES IF NEEDED
+\*------------------------------------*/
+
+/* Example: Highlight row on hover */
+.data-table tr:hover {
+    background-color: var(--color-bg-hover);
+}
+
