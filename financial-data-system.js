@@ -176,52 +176,60 @@ class FinancialDataManager {
         }
     }
 
-    // Enhanced table rendering with view management
-    renderTable() {
-        try {
-            const tbody = this.elements.table.querySelector('tbody');
-            const visibleColumns = this.CONFIG.views[this.state.currentView];
+// financial-data-system.js
 
-            // Update header visibility
-            const headers = this.elements.table.querySelectorAll('th');
-            headers.forEach(header => {
-                const columnName = header.dataset.key;
-                header.style.display = visibleColumns.includes(columnName) ? '' : 'none';
-            });
+// ... [Existing code above remains unchanged] ...
 
-            // Render rows with visible columns
-            tbody.innerHTML = this.state.filteredData.map(row => `
-                <tr>
-                    ${visibleColumns.map(key => {
-                        const value = row[key];
-                        // Enhanced cell rendering with formatting
-                        const isNumeric = this.CONFIG.numericColumns.includes(key);
-                        let formattedValue = this.formatCellValue(key, value);
-                        let classes = this.getCellClasses(key, value);
+// Enhanced table rendering with view management
+renderTable() {
+    try {
+        const tbody = this.elements.table.querySelector('tbody');
+        const visibleColumns = this.CONFIG.views[this.state.currentView];
 
-                        if (key === 'Relevance to Data Centers') {
-                            // Replace text with info icon and tooltip
-                            return `
-                                <td class="${classes}">
-                                    <div class="tooltip-container">
-                                        <span class="info-icon" tabindex="0" aria-label="Relevance Information">
-                                            ℹ️
-                                        </span>
-                                        <span class="tooltip-text">${this.escapeHTML(value)}</span>
-                                    </div>
-                                </td>
-                            `;
-                        }
+        // Update header visibility
+        const headers = this.elements.table.querySelectorAll('th');
+        headers.forEach(header => {
+            const columnName = header.dataset.key;
+            header.style.display = visibleColumns.includes(columnName) ? '' : 'none';
+        });
 
-                        return `<td class="${classes}">${formattedValue || "N/A"}</td>`;
-                    }).join('')}
-                </tr>
-            `).join('');
-        } catch (error) {
-            console.error('Table rendering failed:', error);
-            this.showError('Failed to display data. Please refresh the page.');
-        }
+        // Render rows with visible columns
+        tbody.innerHTML = this.state.filteredData.map(row => `
+            <tr>
+                ${visibleColumns.map(key => {
+                    const value = row[key];
+                    // Enhanced cell rendering with formatting
+                    const isNumeric = this.CONFIG.numericColumns.includes(key);
+                    let formattedValue = this.formatCellValue(key, value);
+                    let classes = this.getCellClasses(key, value);
+
+                    if (key === 'Relevance to Data Centers') {
+                        // Replace text with info icon and tooltip
+                        return `
+                            <td class="${classes}">
+                                <div class="tooltip-container">
+                                    <span class="info-icon" tabindex="0" aria-label="Relevance Information">
+                                        ℹ️
+                                    </span>
+                                    <span class="tooltip-text">${this.escapeHTML(value)}</span>
+                                </div>
+                            </td>
+                        `;
+                    }
+
+                    // Check if it's the first column to add 'frozen-column' class
+                    const isFirstColumn = key === visibleColumns[0];
+                    const tdClass = isFirstColumn ? `${classes} frozen-column` : classes;
+
+                    return `<td class="${tdClass}">${formattedValue || "N/A"}</td>`;
+                }).join('')}
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Table rendering failed:', error);
+        this.showError('Failed to display data. Please refresh the page.');
     }
+}
 
     // Utility function for cell value formatting
     formatCellValue(key, value) {

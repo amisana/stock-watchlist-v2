@@ -678,3 +678,21 @@ th.sort-desc::after {
     background-color: var(--color-bg-hover);
 }
 
+/*------------------------------------*\
+  #FROZEN COLUMN STYLES
+\*------------------------------------*/
+
+/* Frozen Column */
+.frozen-column {
+    position: sticky;
+    left: 0;
+    background-color: var(--color-bg-secondary);
+    z-index: 2; /* Higher than other cells */
+    /* Add a border-right to separate the frozen column */
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure tooltip z-index is higher than frozen column */
+.tooltip-container .tooltip-text {
+    z-index: 3;
+}
