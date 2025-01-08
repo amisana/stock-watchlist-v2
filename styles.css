@@ -696,3 +696,26 @@ th.sort-desc::after {
 .tooltip-container .tooltip-text {
     z-index: 3;
 }
+
+/*------------------------------------*\
+  #FROZEN HEADER STYLES
+\*------------------------------------*/
+
+/* Make table headers sticky */
+.data-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-secondary); /* Ensure background covers content underneath */
+    z-index: var(--z-sticky); /* Ensure headers are above other content */
+}
+
+/* Adjust z-index for frozen column to be below headers */
+.frozen-column {
+    z-index: 50; /* Lower than headers but above other cells */
+}
+
+/* Ensure tooltip appears above the header */
+.tooltip-container .tooltip-text {
+    z-index: 3; /* Ensure tooltips appear above frozen columns and headers */
+}
+

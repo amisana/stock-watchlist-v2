@@ -1,74 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Advanced Financial Data Table</title>
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
         <!-- Enhanced Navigation -->
         <div class="table-nav">
             <div class="nav-group">
                 <div class="search-container">
-                    <input 
-                        type="text" 
-                        class="table-search" 
-                        id="tableSearch" 
+                    <input
+                        type="text"
+                        class="table-search"
+                        id="tableSearch"
                         placeholder="Search stocks, companies, or sectors..."
                         autocomplete="off"
                         spellcheck="false"
                         aria-label="Search financial data table"
-                    >
+                    />
                     <div class="search-icon" aria-hidden="true">
                         <!-- SVG Icon -->
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667zM14 14l-2.9-2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667zM14 14l-2.9-2.9"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
                         </svg>
                     </div>
                 </div>
             </div>
             <div class="nav-group">
                 <div class="view-controls" role="group" aria-label="View Controls">
-                    <button class="view-btn active" data-view="all" aria-pressed="true">All Data</button>
-                    <button class="view-btn" data-view="performance" aria-pressed="false">Performance</button>
-                    <button class="view-btn" data-view="fundamentals" aria-pressed="false">Fundamentals</button>
+                    <button class="view-btn active" data-view="all" aria-pressed="true">
+                        All Data
+                    </button>
+                    <button class="view-btn" data-view="performance" aria-pressed="false">
+                        Performance
+                    </button>
+                    <button class="view-btn" data-view="fundamentals" aria-pressed="false">
+                        Fundamentals
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Enhanced Table Container -->
         <div class="data-table-container">
-            <table class="data-table" id="financial-table">
-                <thead>
-                    <tr>
-                        <th data-key="Symbol" class="frozen-column">Symbol</th>
-                        <th data-key="Company Name">Company Name</th>
-                        <th data-key="Relevance to Data Centers">Relevance to Data Centers</th>
-                        <th data-key="Data Center Categorization">Data Center Categorization</th>
-                        <th data-key="Market Cap">Market Cap</th>
-                        <th data-key="Exchange">Exchange</th>
-                        <th data-key="Industry">Industry</th>
-                        <th data-key="Sector">Sector</th>
-                        <th data-key="Country">Country</th>
-                        <th data-key="1D Change" class="align-right">1D Change</th>
-                        <th data-key="1W Change" class="align-right">1W Change</th>
-                        <th data-key="1M Change" class="align-right">1M Change</th>
-                        <th data-key="3M Change" class="align-right">3M Change</th>
-                        <th data-key="6M Change" class="align-right">6M Change</th>
-                        <th data-key="YTD Change" class="align-right">YTD Change</th>
-                        <th data-key="1Y Change" class="align-right">1Y Change</th>
-                        <th data-key="3Y Change" class="align-right">3Y Change</th>
-                        <th data-key="5Y Change" class="align-right">5Y Change</th>
-                        <th data-key="10Y Change" class="align-right">10Y Change</th>
-                        <th data-key="15Y Change" class="align-right">15Y Change</th>
-                        <th data-key="20Y Change" class="align-right">20Y Change</th>
-                    </tr>
-                </thead>                
-                <tbody>
-                    <!-- Data will be populated dynamically -->
-                </tbody>
-            </table>
+            <!-- NOTE: Thead and Tbody will be built dynamically by financial-data-system.js -->
+            <table class="data-table" id="financial-table"></table>
+
             <div class="loading-overlay" aria-live="polite" aria-busy="true" style="display: none;">
                 <div class="loading-spinner" role="status" aria-label="Loading"></div>
             </div>
