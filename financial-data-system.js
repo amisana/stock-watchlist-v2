@@ -56,11 +56,9 @@ class FinancialDataManager {
 
             // Columns that should display info tooltips
             infoColumns: [
-                'Relevance to Data Centers',
-                'Data Center Categorization',
-                'Data Center Relevance',
-                'Reason for Inclusion',
-                'Holding',
+                'Relevance',
+                'Relevance (Ext)',
+                'Inclusion',
                 'Description',
             ],
 
