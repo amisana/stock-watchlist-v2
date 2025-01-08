@@ -554,10 +554,6 @@ th.sort-desc::after {
     }
 }
 
-/* styles.css */
-
-/* ... [Existing styles above remain unchanged] ... */
-
 /*------------------------------------*\
   #TOOLTIP COMPONENT
 \*------------------------------------*/
@@ -596,11 +592,19 @@ th.sort-desc::after {
     left: 50%;
     transform: translateX(-50%);
     opacity: 0;
-    transition: opacity var(--transition-base);
+    transition: opacity var(--transition-base), visibility var(--transition-base);
     box-shadow: var(--shadow-sm);
     font-size: var(--font-size-sm);
     line-height: 1.4;
     pointer-events: none; /* Prevent tooltip from interfering with mouse events */
+}
+
+/* Tooltip Text - Visible State */
+.tooltip-text.visible {
+    visibility: visible;
+    opacity: 1;
+    /* Ensure smooth transition */
+    transition: opacity var(--transition-base), visibility var(--transition-base);
 }
 
 /* Tooltip Arrow */
@@ -615,24 +619,58 @@ th.sort-desc::after {
     border-color: var(--color-bg-tertiary) transparent transparent transparent;
 }
 
-/* Show Tooltip on Hover and Focus */
+/* Show Tooltip on Hover, Focus, and Visible Class */
 .tooltip-container:hover .tooltip-text,
-.tooltip-container:focus-within .tooltip-text {
+.tooltip-container:focus-within .tooltip-text,
+.tooltip-text.visible {
     visibility: visible;
     opacity: 1;
 }
 
-/*------------------------------------*\
-  #SORT INDICATORS
-\*------------------------------------*/
-th.sort-asc::after {
-    content: ' ▲';
-    font-size: 0.75rem;
+/* Focus Styles for Info Icons */
+.info-icon:focus {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 2px;
 }
 
-th.sort-desc::after {
-    content: ' ▼';
-    font-size: 0.75rem;
+/*------------------------------------*\
+  #ADDITIONAL STYLES IF NEEDED
+\*------------------------------------*/
+
+/* Example: Highlight row on hover */
+.data-table tr:hover {
+    background-color: var(--color-bg-hover);
+}
+
+/*------------------------------------*\
+  #FROZEN COLUMN STYLES
+\*------------------------------------*/
+
+/* Frozen Column */
+.frozen-column {
+    position: sticky;
+    left: 0;
+    background-color: var(--color-bg-secondary);
+    z-index: 50; /* Lower than headers but above other cells */
+    /* Add a border-right to separate the frozen column */
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure tooltip z-index is higher than frozen column */
+.tooltip-container .tooltip-text {
+    z-index: 3; /* Ensure tooltips appear above frozen columns and headers */
+}
+
+/*------------------------------------*\
+  #FROZEN HEADER STYLES
+\*------------------------------------*/
+
+/* Make table headers sticky */
+.data-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-secondary); /* Ensure background covers content underneath */
+    z-index: var(--z-sticky); /* Ensure headers are above other content */
 }
 
 /*------------------------------------*\
@@ -656,12 +694,6 @@ th.sort-desc::after {
     margin-bottom: var(--spacing-xs);
 }
 
-/* Adjust loading and error overlays if necessary */
-.loading-overlay,
-.error-overlay {
-    padding: var(--spacing-lg);
-}
-
 /* Ensure tooltips have adequate space */
 @media (max-width: 600px) {
     .tooltip-text {
@@ -669,53 +701,8 @@ th.sort-desc::after {
     }
 }
 
-/*------------------------------------*\
-  #ADDITIONAL STYLES IF NEEDED
-\*------------------------------------*/
-
-/* Example: Highlight row on hover */
-.data-table tr:hover {
-    background-color: var(--color-bg-hover);
+/* Adjust loading and error overlays if necessary */
+.loading-overlay,
+.error-overlay {
+    padding: var(--spacing-lg);
 }
-
-/*------------------------------------*\
-  #FROZEN COLUMN STYLES
-\*------------------------------------*/
-
-/* Frozen Column */
-.frozen-column {
-    position: sticky;
-    left: 0;
-    background-color: var(--color-bg-secondary);
-    z-index: 2; /* Higher than other cells */
-    /* Add a border-right to separate the frozen column */
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Ensure tooltip z-index is higher than frozen column */
-.tooltip-container .tooltip-text {
-    z-index: 3;
-}
-
-/*------------------------------------*\
-  #FROZEN HEADER STYLES
-\*------------------------------------*/
-
-/* Make table headers sticky */
-.data-table th {
-    position: sticky;
-    top: 0;
-    background-color: var(--color-bg-secondary); /* Ensure background covers content underneath */
-    z-index: var(--z-sticky); /* Ensure headers are above other content */
-}
-
-/* Adjust z-index for frozen column to be below headers */
-.frozen-column {
-    z-index: 50; /* Lower than headers but above other cells */
-}
-
-/* Ensure tooltip appears above the header */
-.tooltip-container .tooltip-text {
-    z-index: 3; /* Ensure tooltips appear above frozen columns and headers */
-}
-

@@ -45,8 +45,6 @@ class FinancialDataManager {
             webAppURL: webAppURL,
 
             // *Optional* "views" that define subsets of columns by name
-            // If the sheet changes column names, these may need updating or
-            // you can remove them if you want fully dynamic columns all the time.
             views: {
                 all: [], // we’ll populate dynamically after columns arrive
                 performance: ['Symbol', 'Company Name', '1D Change', '1W Change', '1M Change', '3M Change',
@@ -56,7 +54,17 @@ class FinancialDataManager {
                                'Sector', 'Country']
             },
 
-            // Known numeric columns (this list can be updated or replaced by dynamic detection)
+            // Columns that should display info tooltips
+            infoColumns: [
+                'Relevance to Data Centers',
+                'Data Center Categorization',
+                'Data Center Relevance',
+                'Reason for Inclusion',
+                'Holding',
+                'Description',
+            ],
+
+            // Known numeric columns
             numericColumns: [
                 'Market Cap', '1D Change', '1W Change', '1M Change', '3M Change', '6M Change',
                 'YTD Change', '1Y Change', '3Y Change', '5Y Change', '10Y Change', '15Y Change', '20Y Change'
@@ -93,6 +101,13 @@ class FinancialDataManager {
             // View switching
             this.elements.viewButtons?.forEach(button => {
                 button.addEventListener('click', (e) => this.handleViewChange(e));
+            });
+
+            // Global click listener to close any open tooltips when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.tooltip-container')) {
+                    this.closeAllTooltips();
+                }
             });
 
         } catch (error) {
@@ -201,14 +216,11 @@ class FinancialDataManager {
             if (!tbody) return; // Safety check
 
             // Determine which columns to show for the current view
-            // If the view is 'all', show all columns. Otherwise, filter by config
             let visibleColumns = [];
             if (this.state.currentView === 'all') {
                 visibleColumns = [...this.state.columns];
             } else {
-                // Filter the dynamic columns by the configured subset
                 const subset = this.CONFIG.views[this.state.currentView] || [];
-                // Only include columns that actually exist in the sheet
                 visibleColumns = this.state.columns.filter(col => subset.includes(col));
             }
 
@@ -221,28 +233,70 @@ class FinancialDataManager {
 
                 visibleColumns.forEach((col, colIndex) => {
                     const value = row[col];
+                    // #3 Escape HTML for text-based columns
                     const formattedValue = this.formatCellValue(col, value);
                     const classes = this.getCellClasses(col, value);
 
-                    // Example: special tooltip logic for "Relevance to Data Centers"
-                    if (col === 'Relevance to Data Centers') {
+                    // If the column is in infoColumns, show tooltip
+                    if (this.CONFIG.infoColumns.includes(col)) {
                         const td = document.createElement('td');
                         td.className = classes;
-                        td.innerHTML = `
-                            <div class="tooltip-container">
-                                <span class="info-icon" tabindex="0" aria-label="Relevance Information">
-                                    ℹ️
-                                </span>
-                                <span class="tooltip-text">${this.escapeHTML(value)}</span>
-                            </div>
+
+                        // Create Tooltip Container
+                        const tooltipContainer = document.createElement('div');
+                        tooltipContainer.classList.add('tooltip-container');
+
+                        // Create Info Icon
+                        const infoIcon = document.createElement('span');
+                        infoIcon.classList.add('info-icon');
+                        infoIcon.setAttribute('tabindex', '0'); // Make focusable
+                        infoIcon.setAttribute('aria-label', `Info about ${col}`);
+                        infoIcon.innerHTML = `
+                            <!-- SVG Icon for Info -->
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <line x1="8" y1="4" x2="8" y2="8" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="8" cy="12" r="0.5" fill="currentColor"/>
+                            </svg>
                         `;
+
+                        // Create Tooltip Text
+                        const tooltipText = document.createElement('span');
+                        tooltipText.classList.add('tooltip-text');
+                        tooltipText.textContent = this.escapeHTML(value) || "No additional information.";
+
+                        // Assemble tooltip
+                        tooltipContainer.appendChild(infoIcon);
+                        tooltipContainer.appendChild(tooltipText);
+
+                        // Keyboard & click toggles
+                        const toggleTooltip = () => {
+                            tooltipText.classList.toggle('visible');
+                        };
+                        const closeTooltip = () => {
+                            tooltipText.classList.remove('visible');
+                        };
+
+                        infoIcon.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleTooltip();
+                            } else if (e.key === 'Escape') {
+                                e.preventDefault();
+                                closeTooltip();
+                                infoIcon.blur();
+                            }
+                        });
+                        infoIcon.addEventListener('blur', closeTooltip);
+                        infoIcon.addEventListener('click', toggleTooltip);
+
+                        td.appendChild(tooltipContainer);
                         tr.appendChild(td);
                         return;
                     }
 
-                    // Create the td
+                    // Otherwise, normal cell
                     const td = document.createElement('td');
-                    // If it's the first visible column, freeze it
                     if (colIndex === 0) {
                         td.className = `${classes} frozen-column`;
                     } else {
@@ -261,10 +315,9 @@ class FinancialDataManager {
     }
 
     /**
-     * Create/Update the table header dynamically (based on this.state.columns)
+     * Create/Update the table header dynamically
      */
     buildTableHeader() {
-        // Remove any existing thead
         let oldThead = this.elements.table.querySelector('thead');
         if (oldThead) {
             this.elements.table.removeChild(oldThead);
@@ -287,8 +340,8 @@ class FinancialDataManager {
             th.textContent = colName;
             th.dataset.key = colName;
 
-            // Attach a click handler for sorting
-            th.addEventListener('click', () => {
+            // #4 Debounce column-header click for sorting
+            th.addEventListener('click', this.debounce(() => {
                 // Remove existing sort indicators from all headers
                 thead.querySelectorAll('th').forEach(thEl => {
                     thEl.classList.remove('sort-asc', 'sort-desc');
@@ -303,9 +356,9 @@ class FinancialDataManager {
                         this.state.sortConfig.direction === 'asc' ? 'sort-asc' : 'sort-desc'
                     );
                 }
-            });
+            }, 200));
 
-            // If this is the currently sorted column, add the appropriate class
+            // If currently sorted by this column, add a class
             if (this.state.sortConfig.column === colName) {
                 th.classList.add(
                     this.state.sortConfig.direction === 'asc' ? 'sort-asc' : 'sort-desc'
@@ -318,7 +371,7 @@ class FinancialDataManager {
         thead.appendChild(headerRow);
         this.elements.table.appendChild(thead);
 
-        // If there's no <tbody>, create one
+        // Ensure <tbody> exists
         if (!this.elements.table.querySelector('tbody')) {
             const tbody = document.createElement('tbody');
             this.elements.table.appendChild(tbody);
@@ -329,13 +382,15 @@ class FinancialDataManager {
      * Utility function for cell value formatting
      */
     formatCellValue(key, value) {
+        // If numeric column
         if (this.CONFIG.numericColumns.includes(key)) {
             if (key === 'Market Cap') {
                 return this.formatMarketCap(value);
             }
             return this.formatPercentage(value);
         }
-        return value ?? "N/A";
+        // #3 Escape for all textual columns
+        return this.escapeHTML(value ?? "N/A");
     }
 
     /**
@@ -366,11 +421,10 @@ class FinancialDataManager {
     getCellClasses(key, value) {
         const classes = [];
 
-        // Example: highlight "Symbol"
         if (key === 'Symbol') classes.push('symbol');
         if (key === 'Company Name') classes.push('company-name');
 
-        // If it's a numeric column (except Market Cap), show red/green
+        // Numeric columns except Market Cap => color-coded positive/negative
         if (this.CONFIG.numericColumns.includes(key) && key !== 'Market Cap') {
             classes.push('price-change');
             classes.push(parseFloat(value) >= 0 ? 'positive' : 'negative');
@@ -379,7 +433,7 @@ class FinancialDataManager {
     }
 
     /**
-     * Debounce utility for search optimization
+     * Debounce utility
      */
     debounce(func, wait) {
         let timeout;
@@ -403,9 +457,6 @@ class FinancialDataManager {
         }
     }
 
-    /**
-     * Hide error overlay
-     */
     hideError() {
         if (this.elements.errorOverlay) {
             this.elements.errorOverlay.style.display = 'none';
@@ -414,7 +465,7 @@ class FinancialDataManager {
     }
 
     /**
-     * Update data (and filteredData) with new info, then re-render table
+     * Update data and re-render
      */
     updateData(newData) {
         this.state.data = newData;
@@ -423,7 +474,7 @@ class FinancialDataManager {
     }
 
     /**
-     * Show loading overlay
+     * Show/hide loading overlay
      */
     showLoading() {
         if (this.elements.loadingOverlay) {
@@ -431,9 +482,6 @@ class FinancialDataManager {
         }
     }
 
-    /**
-     * Hide loading overlay
-     */
     hideLoading() {
         if (this.elements.loadingOverlay) {
             this.elements.loadingOverlay.style.display = 'none';
@@ -441,7 +489,7 @@ class FinancialDataManager {
     }
 
     /**
-     * Fetch data from Google Apps Script, expecting { columns: [...], rows: [...] }
+     * Fetch data from Google Apps Script
      */
     async fetchData() {
         this.state.loading = true;
@@ -457,7 +505,12 @@ class FinancialDataManager {
             // Expecting structure: { columns: [...], rows: [...] }
             const { columns, rows } = await response.json();
 
-            // Convert rows (array of arrays) => array of objects keyed by columns
+            // #1 Fallback check for columns/rows
+            if (!Array.isArray(columns) || !Array.isArray(rows)) {
+                throw new Error("Invalid data format: 'columns' or 'rows' is missing or not an array");
+            }
+
+            // Convert rows => array of objects
             const processedData = rows.map(rowArr => {
                 const obj = {};
                 columns.forEach((colName, idx) => {
@@ -469,7 +522,7 @@ class FinancialDataManager {
             // Save columns in state
             this.state.columns = columns;
 
-            // (Optional) If you want "all" view to always show every column:
+            // Update 'all' view to include all columns
             this.CONFIG.views.all = [...columns];
 
             // Validate and parse data
@@ -478,7 +531,8 @@ class FinancialDataManager {
 
         } catch (error) {
             console.error("Error fetching data:", error);
-            this.showError('Failed to fetch data. Please try again later.');
+            // #2 More detailed error overlay
+            this.showError(`Failed to fetch data. ${error.message ? `Details: ${error.message}` : ''}`);
         } finally {
             this.state.loading = false;
             this.hideLoading();
@@ -486,18 +540,18 @@ class FinancialDataManager {
     }
 
     /**
-     * Validate and parse fetched data (e.g., parse Market Cap, numeric changes, etc.)
+     * Validate and parse fetched data
      */
     validateData(dataArray) {
         return dataArray.map(item => {
-            // Make a shallow copy, then parse numeric fields
             const copy = { ...item };
 
-            // Example: if these columns exist in your sheet, parse them. If a column is missing,
-            // parseFloat(...) will just result in 0 or NaN, so this is safe.
-            copy['Market Cap'] = parseMarketCap(copy['Market Cap']);
+            // Parse Market Cap
+            if ('Market Cap' in copy) {
+                copy['Market Cap'] = parseMarketCap(copy['Market Cap']);
+            }
 
-            // Attempt to parse each "Change" column
+            // Parse each "Change" column
             [
                 '1D Change', '1W Change', '1M Change', '3M Change', '6M Change',
                 'YTD Change', '1Y Change', '3Y Change', '5Y Change', '10Y Change',
@@ -512,12 +566,22 @@ class FinancialDataManager {
     }
 
     /**
-     * Utility function to escape HTML (for tooltip text, etc.)
+     * Escape HTML (for tooltip text & any text cells)
      */
     escapeHTML(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Close all open tooltips
+     */
+    closeAllTooltips() {
+        const tooltips = this.elements.table.querySelectorAll('.tooltip-text.visible');
+        tooltips.forEach(tooltip => {
+            tooltip.classList.remove('visible');
+        });
     }
 }
 
