@@ -82,12 +82,14 @@ class FinancialDataManager {
           "Country",
         ],
       },
+      // Columns that display info tooltips when encountered normally
       infoColumns: [
         "Relevance",
         "Relevance (Ext)",
         "Inclusion",
         "Description",
       ],
+      // Known numeric columns
       numericColumns: [
         "Market Cap",
         "1D Change",
@@ -273,7 +275,9 @@ class FinancialDataManager {
           const formattedValue = this.formatCellValue(col, value);
           const classes = this.getCellClasses(col, value);
 
-          // If the column is in infoColumns, show a tooltip
+          // -----------------------------------------------------------
+          // 1) If column is in infoColumns => existing tooltip approach
+          // -----------------------------------------------------------
           if (this.CONFIG.infoColumns.includes(col)) {
             const td = document.createElement("td");
             td.className = classes;
@@ -328,16 +332,92 @@ class FinancialDataManager {
 
             td.appendChild(tooltipContainer);
             tr.appendChild(td);
+
+          // -----------------------------------------------------------
+          // 2) Otherwise, normal cell
+          //    But we want a special "Symbol + Info" approach for colIndex === 0
+          // -----------------------------------------------------------
           } else {
-            // Normal cell
             const td = document.createElement("td");
-            // Freeze the first column if desired
             if (colIndex === 0) {
+              // This is the frozen first column
               td.className = `${classes} frozen-column`;
+
+              // Create a container for Symbol + optional Relevance icon
+              const symbolContainer = document.createElement("div");
+              symbolContainer.style.display = "inline-flex";
+              symbolContainer.style.alignItems = "center";
+              symbolContainer.style.gap = "0.25rem";
+
+              // The Symbol text
+              const symbolText = document.createElement("span");
+              symbolText.textContent = formattedValue ?? "N/A";
+
+              // Check if "Relevance" data is present
+              const relevanceValue = row["Relevance"] || "";
+              if (relevanceValue.trim() !== "") {
+                // Build a new tooltip icon for the "Relevance" column
+                const tooltipContainer = document.createElement("div");
+                tooltipContainer.classList.add("tooltip-container");
+
+                const infoIcon = document.createElement("span");
+                infoIcon.classList.add("info-icon");
+                infoIcon.setAttribute("tabindex", "0");
+                infoIcon.setAttribute("aria-label", "Relevance Information");
+                infoIcon.innerHTML = `
+                  <!-- SVG Icon for Info -->
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+                      <line x1="8" y1="4" x2="8" y2="8" stroke="currentColor" stroke-width="2"/>
+                      <circle cx="8" cy="12" r="0.5" fill="currentColor"/>
+                  </svg>
+                `;
+
+                // Tooltip text for Relevance
+                const tooltipText = document.createElement("span");
+                tooltipText.classList.add("tooltip-text");
+                tooltipText.textContent = this.escapeHTML(relevanceValue);
+
+                tooltipContainer.appendChild(infoIcon);
+                tooltipContainer.appendChild(tooltipText);
+
+                // Same keyboard/click toggles as the existing tooltip logic
+                const toggleTooltip = () => {
+                  tooltipText.classList.toggle("visible");
+                };
+                const closeTooltip = () => {
+                  tooltipText.classList.remove("visible");
+                };
+
+                infoIcon.addEventListener("keydown", (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleTooltip();
+                  } else if (e.key === "Escape") {
+                    e.preventDefault();
+                    closeTooltip();
+                    infoIcon.blur();
+                  }
+                });
+                infoIcon.addEventListener("blur", closeTooltip);
+                infoIcon.addEventListener("click", toggleTooltip);
+
+                // Place Symbol text + Relevance icon in the same container
+                symbolContainer.appendChild(symbolText);
+                symbolContainer.appendChild(tooltipContainer);
+
+              } else {
+                // If no Relevance data, just show the Symbol
+                symbolContainer.appendChild(symbolText);
+              }
+
+              td.appendChild(symbolContainer);
             } else {
+              // Standard cell for columns other than Symbol
               td.className = classes;
+              td.textContent = formattedValue ?? "N/A";
             }
-            td.textContent = formattedValue ?? "N/A";
+
             tr.appendChild(td);
           }
         });
