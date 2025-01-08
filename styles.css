@@ -132,6 +132,28 @@ body {
     gap: var(--spacing-md);
 }
 
+/* Bottom Left Button */
+.bottom-left-button {
+    position: fixed; /* Makes the button stay in place */
+    bottom: 20px; /* Adjust distance from the bottom */
+    left: 20px; /* Adjust distance from the left */
+    z-index: var(--z-sticky); /* Ensures the button stays above other content */
+    background-color: var(--color-bg-secondary); /* Matches design theme */
+    color: var(--color-text-primary); /* Text color */
+    padding: var(--spacing-sm) var(--spacing-md); /* Padding for the button */
+    border-radius: 8px; /* Rounded corners */
+    font-size: var(--font-size-sm); /* Matches typography scale */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    text-decoration: none; /* Remove underline from the text */
+    box-shadow: var(--shadow-sm); /* Optional shadow for aesthetics */
+    transition: var(--transition-colors); /* Smooth transition for hover */
+}
+
+.bottom-left-button a {
+    color: inherit; /* Inherits the color from the container */
+    text-decoration: none; /* Ensures no underline for the link */
+}
+
 /* Search Component */
 .search-container {
     position: relative;
@@ -235,8 +257,12 @@ body {
     transition: var(--transition-base);
 }
 
+/* Ensure hovered cells don't overshadow the frozen column */
 .data-table tr:hover td {
     background-color: var(--color-bg-hover);
+    /* Give hovered cells a lower z-index than the frozen column */
+    position: relative;
+    z-index: 1;
 }
 
 .align-right {
@@ -646,13 +672,14 @@ th.sort-desc::after {
   #FROZEN COLUMN STYLES
 \*------------------------------------*/
 
-/* Frozen Column */
+/* Increase the frozen column's z-index so it always sits above hovered row cells */
+
 .frozen-column {
     position: sticky;
     left: 0;
     background-color: var(--color-bg-secondary);
-    z-index: 50; /* Lower than headers but above other cells */
-    /* Add a border-right to separate the frozen column */
+    /* Raise z-index above typical hover backgrounds */
+    z-index: 60; 
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
