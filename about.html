@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>About - The $DATA Index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- About Page Enhanced Styles -->
+    <style>
+        /**
+         * About Page Specific Styles
+         * 
+         * These styles extend the base design system while maintaining
+         * consistency with the application's core visual language.
+         * 
+         * Architecture:
+         * 1. Container & Layout
+         * 2. Typography System
+         * 3. Interactive Components
+         * 4. Animation System
+         * 5. Responsive Design
+         */
+
+        /* Content Container */
+        .content-section {
+            max-width: min(800px, 90vw);
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            background-color: var(--color-bg-secondary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            
+            /* Create GPU layer for better performance */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            
+            /* Optimize paint operations */
+            contain: content;
+        }
+
+        /* Section Typography */
+        .content-section h1 {
+            color: var(--color-text-primary);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-xl);
+            letter-spacing: -0.025em;
+        }
+
+        .content-section p {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-base);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-lg);
+            max-width: 70ch;
+        }
+
+        /* Info Block Component */
+        .info-block {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-lg);
+            background-color: var(--color-bg-tertiary);
+            overflow: hidden;
+            
+            /* Performance optimizations */
+            will-change: transform;
+            transition: transform 200ms var(--ease-out);
+        }
+
+        .info-block:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Info Block Header */
+        .info-block summary {
+            position: relative;
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--color-text-primary);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--color-bg-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Layout */
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            
+            /* Transitions */
+            transition: background-color 200ms var(--ease-out);
+        }
+
+        .info-block summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .info-block summary::before {
+            content: '▼';
+            font-size: 0.75em;
+            transition: transform 200ms var(--ease-out);
+        }
+
+        .info-block[open] summary::before {
+            transform: rotate(-180deg);
+        }
+
+        .info-block summary:hover {
+            background-color: var(--color-bg-hover);
+        }
+
+        /* Info Block Content */
+        .info-block > p {
+            padding: var(--spacing-lg);
+            margin: 0;
+            color: var(--color-text-secondary);
+        }
+
+        /* Nested Info Blocks */
+        .info-block .info-block {
+            margin: var(--spacing-md);
+            background-color: var(--color-bg-primary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Animation System */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-block[open] > p {
+            animation: fadeIn 200ms var(--ease-out);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content-section {
+                padding: var(--spacing-md);
+                margin: var(--spacing-sm);
+            }
+
+            .info-block summary {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .info-block p {
+                padding: var(--spacing-md);
+            }
+        }
+
+        /* Accessibility Enhancements */
+        @media (prefers-reduced-motion: reduce) {
+            .info-block,
+            .info-block[open] > p {
+                animation: none;
+                transition: none;
+            }
+        }
+
+        .info-block summary:focus-visible {
+            outline: 2px solid var(--focus-ring-color);
+            outline-offset: -2px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .content-section {
+                box-shadow: none;
+                margin: 0;
+                padding: 1cm;
+            }
+
+            .info-block {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .info-block summary::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Site Header -->
+    <header class="site-header">
+        <h1 class="page-title">$DATA Index: About</h1>
+        <nav class="site-links">
+            <a href="index.html">Home</a>
+            <a href="about.html" class="active">About</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-section">
+        <section>
+            <h1>Background</h1>
+      <p>In 2020, during my final year of medical school, a unique window opened. After years of rigorous medical training that demanded singular focus, there was finally intellectual space to explore interests that had been simmering beneath the surface. This wasn't just about having free time - it was about having the mental bandwidth to deeply engage with complex systems that had long fascinated me. Cloud computing and data infrastructure emerged as central themes, not because they were trendy, but because they represented fundamental shifts in how modern systems operate, scale, and evolve.</p>
+
+      <p>The timing proved serendipitous as COVID-19 transformed our world. The pandemic didn't just accelerate digital transformation - it exposed the intricate web of dependencies underlying our technological infrastructure. What began as curiosity about cloud computing evolved into a deep dive into semiconductor supply chains, revealing layers of complexity I found engrossing. The global chip shortage introduced me to our critical dependencies on specific raw materials (lithium, cobalt, rare earth metals) each with its own complex geopolitical and environmental implications — manifestations of how deeply intertwined our digital and physical infrastructures had become.</p>
+
+      <p>A transitional year coincided with witnessing ChatGPT's emergence from the ground floor - a convergence that proved transformative. IT was clearly mission critical and I was looking for a vehicle for deeper and more structured insights. Data creation, storage, and access was another theme that was emerging over and over again — data lakes versus data warehousing, cold versus hot storage, etc... At the time, Data Bricks was the most valuable private company in the world. I started to learn more about Enterprise Resource Planning, a sequence of words so boring it obscures their profound importance. I may have been in the minority, as these were nothing new to much of the world, but to me (and I imagine many of my peers in medicine) there was little exposure to this industry software that many of our lives, my life, orbited around - Epic - is itself a specialized ERP system, yet most of us interfacing with it daily had little grasp of the broader infrastructure landscape it represented.</p>
+
+      <p>It's weird to write about this journey, my path to learning about things people have known about for years and had the pulse on for decades. But I don't think it's so uncommon within medical and adjacent spaces. There's something uniquely valuable about coming to these realizations from a different angle, seeing patterns that might be obvious to industry veterans but connecting them to frameworks from other disciplines. The very things that made ERP seem impenetrably boring at first glance - the systematic organization of resources, the complex interdependencies, the critical importance of reliability - were precisely what made it fascinating when viewed through the lens of systems and infrastructure. A complex adaptive system both knowable and unknowable, much like human physiology - the body's intricate resource management and feedback loops suddenly finding their parallel in enterprise systems.</p>
+
+      <p>I made a decision to pursue a masters in IT and was fortunate enough to be given an open door by industry veteran and Dean of Information Systems at Wright State, Don Hopkins. After a wide ranging two-and-a-half hour Zoom call that, Dean Hopkins told me to come on board. He seemed to have no confusion with why a medical doctor could be interested in IT and why the opportunity would be of value to me. The big picture was becoming clearer, but also more complex with each layer of understanding.</p>
+
+      <p>An eye opening term was cut short by a transition into a new role as an Occupational & Environmental Medicine resident. Entering OEM residency while pursuing Environmental Health Sciences opened entirely new dimension of insights. Global environmental change became not just an abstract concern, but a concrete framework for understanding how the demand for computational resources affects everything from worker health to data center infrastructure. The sustainability question expanded far beyond surface-level discussions of electric vehicles and solar panels.</p>
+
+      <p>This comprehensive view also reveals the crucial role of what might be called "enabling materials" — substances and components that, while often overlooked, are essential to the functioning of modern computing infrastructure. These range from specialized ceramics used in chip manufacturing to advanced polymers in cable insulation, from rare earth elements in power systems to high-purity gases used in semiconductor fabrication.</p>
+
+      <p>I've discussed just a fraction of the industry and innovation, I've aimed to consolidate here. I've also included companies that produce radio-frequency identification (RFID) solutions ($PI), AI-powered software solutions ($AI), and high-performance networking switches ($ANET).</p>
+
+      <details class="info-block">
+        <summary>Vertical Integration</summary>
+        <p>Almost all of these companies have vertically integrated their offerings, blending software and hardware expertise. Take Arista Networks for example - they've mastered both the software layer with their EOS (Extensible Operating System) and the hardware engineering of their switching platforms. This vertical integration isn't just a business strategy; it's becoming essential as the demands of modern infrastructure require tight coupling between software capabilities and hardware performance. The boundaries between traditionally separate domains continue to dissolve as companies recognize that optimizing one layer requires deep understanding and control of the others.</p>
+      </details>
+
+      <details class="info-block">
+        <summary>Patterns E(Merge)</summary>
+        <p>In the process, a clear pattern of strategic M&A activity emerged that revealed deeper systemic relationships. The acquisitions weren't random - they followed distinct patterns that highlighted how different parts of the computing and data center stack are becoming more tightly coupled.</p>
+
+        <p>Let's again return to the case of cooling systems: in the process of research companies like SPX FLOW, Watlow Electric and Eurotherm emerged that were merging, engulfing, or being engulfed. These deals reveal how cooling technology is becoming increasingly integrated with power systems and control electronics.</p>
+
+        <details class="info-block">
+          <summary>The Watlow/Eurotherm Deal</summary>
+          <p>The Eurotherm acquisition by Watlow (Private) showed how temperature control technology is evolving to handle the increasing density and complexity of modern computing infrastructure:</p>
+
+          <p>Eurotherm specializes in precision temperature and process controls - experts in maintaining exact temperatures in complex industrial processes - while Watlow makes industrial heaters, temperature sensors, and thermal systems controllers. The acquisition represents a shift from simpler temperature management (like controlling a room's climate) to the complex challenge of managing thousands of tiny, powerful heat sources packed together - a necessary evolution for modern computing infrastructure.</p>
+        </details>
+
+        <details class="info-block">
+          <summary>The Nanometrics/Rudolph Merger</summary>
+          <p>As above, the merger of Nanometrics and Rudolph Technologies to form Onto Innovation ($ONTO) represents how chip inspection and process control are evolving to handle the increasing complexity and precision demands of modern semiconductor manufacturing:</p>
+
+          <p>Nanometrics specializes in advanced metrology systems — experts in measuring features mere atoms wide — while Rudolph Technologies develops process control systems that ensure manufacturing precision. The merger represents a shift from simpler quality control (like checking for visible defects) to the complex challenge of monitoring and controlling microscopic manufacturing steps happening simultaneously at scale.</p>
+        </details>
+      </details>
+
+      <details class="info-block">
+        <summary>The Next Chapter</summary>
+        <p>The DATA Index's evolution has revealed fields of study and future directions I did not anticipate. These mostly represent future directions, really for my exploration and anyone coming along for the ride.</p>
+      </details>
+    </section>
+  </main>
+
+  <!-- (Optional) Footer or bottom-left button for consistency -->
+  <footer>
+    <div class="bottom-left-button">
+      <a href="https://kianimd.com" target="_blank">kianimd.com</a>
+    </div>
+  </footer>
+</body>
+</html>

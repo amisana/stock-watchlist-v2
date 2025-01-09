@@ -751,3 +751,206 @@ th.sort-desc::after {
 .error-overlay {
     padding: var(--spacing-lg);
 }
+
+/*------------------------------------*\
+  #ABOUT.HTML FORMATTING
+\*------------------------------------*/
+
+/* Article Formatting */
+
+/* Expandable Info Blocks */
+.info-block {
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border for distinction */
+    border-radius: 5px;
+    margin-bottom: 1em;
+    padding: 0.5em;
+    background-color: var(--color-bg-tertiary); /* Changed from #f9f9f9 to a darker background */
+}
+
+.info-block summary {
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    color: var(--color-text-primary); /* Ensure summary text is visible */
+    background-color: var(--color-bg-secondary); /* Dark background for summary */
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 4px;
+    transition: background-color var(--transition-base);
+}
+
+.info-block summary::before {
+    content: '▼';
+    display: inline-block;
+    margin-right: 0.5em;
+    transition: transform 0.3s ease;
+    color: var(--color-text-primary); /* Ensure arrow is visible */
+}
+
+.info-block[open] summary::before {
+    transform: rotate(-90deg);
+}
+
+.info-block p {
+    margin: 0.5em 0 0 1.5em;
+    color: var(--color-text-primary); /* Ensure paragraph text is visible */
+}
+
+/* Nested Info Blocks */
+.info-block details {
+    margin-top: 0.5em;
+}
+
+/* Enhanced Summary Styling */
+.info-block summary:hover {
+    background-color: var(--color-bg-hover);
+}
+
+/* Accessible Focus Styles */
+.info-block summary:focus {
+    box-shadow: 0 0 0 var(--focus-ring-offset) var(--color-bg-primary),
+                0 0 0 calc(var(--focus-ring-offset) + 2px) var(--focus-ring-color);
+}
+
+/* Article Content Styling */
+.content-section h1,
+.content-section h2,
+.content-section h3 {
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.content-section h1 {
+    font-size: calc(var(--font-size-xl) * 1.2);
+    font-weight: var(--font-weight-bold);
+}
+
+.content-section h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.content-section h3 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+}
+
+.content-section p {
+    margin-bottom: var(--spacing-md);
+    line-height: var(--line-height-relaxed);
+}
+
+.content-section ul,
+.content-section ol {
+    margin-left: 1.5em;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.content-section li {
+    margin-bottom: 0.5em;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    .content-section {
+        padding: var(--spacing-md);
+    }
+
+    .content-section h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .content-section h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .content-section h3 {
+        font-size: var(--font-size-md);
+    }
+
+    .info-block p {
+        margin-left: 1em;
+    }
+}
+
+/* Additional Styling for Enhanced Readability */
+.content-section a {
+    color: var(--color-positive);
+    text-decoration: underline;
+    transition: color var(--transition-base);
+}
+
+.content-section a:hover,
+.content-section a:focus {
+    color: var(--color-positive-hover);
+}
+
+.content-section strong {
+    color: var(--color-text-primary);
+}
+
+.content-section blockquote {
+    border-left: 4px solid var(--color-neutral);
+    padding-left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    margin-left: 0;
+    margin-right: 0;
+    font-style: italic;
+}
+
+/* Ensure Images are Responsive */
+.content-section img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: var(--spacing-md);
+}
+
+/* Code Blocks Styling */
+.content-section pre {
+    background-color: var(--color-bg-tertiary);
+    padding: var(--spacing-sm);
+    border-radius: 5px;
+    overflow-x: auto;
+    color: var(--color-text-primary);
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    margin-bottom: var(--spacing-md);
+}
+
+.content-section code {
+    background-color: var(--color-bg-tertiary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    color: var(--color-text-primary);
+}
+
+/* Table Styling within Articles */
+.content-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md);
+}
+
+.content-section th,
+.content-section td {
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-bg-secondary);
+    text-align: left;
+}
+
+.content-section th {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+}
+
+.content-section tr:nth-child(even) {
+    background-color: var(--color-bg-hover);
+}
+
+.content-section tr:hover {
+    background-color: var(--color-bg-active);
+}
+
