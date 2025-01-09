@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -6,7 +5,18 @@
         <title>Advanced Financial Data Table</title>
         <link rel="stylesheet" href="styles.css" />
     </head>
+
     <body>
+        <!-- Site Header (new) -->
+        <header class="site-header">
+            <h1 class="page-title">The $DATA Index</h1>
+            <nav class="site-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </header>
+    
         <!-- Enhanced Navigation -->
         <div class="table-nav">
             <div class="nav-group">
@@ -16,38 +26,34 @@
                         class="table-search"
                         id="tableSearch"
                         placeholder="Search stocks, companies, or sectors..."
-                        autocomplete="off"
-                        spellcheck="false"
-                        aria-label="Search financial data table"
                     />
-                    <div class="search-icon" aria-hidden="true">
-                        <!-- SVG Icon -->
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path
-                                d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667zM14 14l-2.9-2.9"
-                                stroke="currentColor"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
+                    <div class="search-icon">
+                        <!-- SVG icon -->
                     </div>
                 </div>
             </div>
             <div class="nav-group">
                 <div class="view-controls" role="group" aria-label="View Controls">
-                    <button class="view-btn active" data-view="all" aria-pressed="true">
-                        All Data
-                    </button>
-                    <button class="view-btn" data-view="performance" aria-pressed="false">
-                        Performance
-                    </button>
-                    <button class="view-btn" data-view="fundamentals" aria-pressed="false">
-                        Fundamentals
-                    </button>
+                    <button class="view-btn active" data-view="all" aria-pressed="true">All Data</button>
+                    <button class="view-btn" data-view="performance" aria-pressed="false">Performance</button>
+                    <button class="view-btn" data-view="fundamentals" aria-pressed="false">Fundamentals</button>
                 </div>
             </div>
         </div>
+    
+        <!-- Enhanced Table Container -->
+        <div class="data-table-container">
+            ...
+        </div>
+    
+        <div class="bottom-left-button">
+            <a href="https://kianimd.com" target="_blank">kianimd.com</a>
+        </div>
+    
+        <!-- Core System Script -->
+        <script type="module" src="financial-data-system.js"></script>
+    </body>
+    
 
         <!-- Enhanced Table Container -->
         <div class="data-table-container">
